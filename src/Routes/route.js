@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import { auth } from "../Middleware/auth.js";
 //----- import controllers files/functions -----
-import { createUser,login } from "../Controllers/userController.js";
+import { createUser,login, logout, sessionData } from "../Controllers/userController.js";
 import { createCampaign, enableDisableCampaign, redirectCampaign } from "../Controllers/campaignController.js";
 
 // router.get('/',function (req, res) {
@@ -12,9 +12,8 @@ import { createCampaign, enableDisableCampaign, redirectCampaign } from "../Cont
 //--------- user Apis -----------
 router.post('/register', createUser);// for creating users
 router.post('/login', login); // let you login for whole session
-router.get('/admin', auth,(req, res)=>{
-    return res.status(200).send({status: true, message:'you are authorized user!'})
-}); //should be accessible to login users only
+router.get('/admin',auth, sessionData) // to get info of session user data
+router.delete('/logout', logout)
 
 // -------- campaign Apis -----------
 router.post('/createCampaign',auth, createCampaign); // for creating campaign

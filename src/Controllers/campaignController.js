@@ -44,11 +44,12 @@ const redirectCampaign = async function (req, res) {
         // ---- check token in DB ------
         const campaignCheck =  await campaignModel.findOne({short_token:short_token})
         if(!campaignCheck) return res.status(404).send({status:false, message:'campaign with given short token does not exist'})
+
+        // logic would be here for 70:30 distribution .
         let redirectedUrl = campaignCheck.offers[1].offer_url
 
         return res.status(302).redirect(302, `${redirectedUrl}`)
 
-        
     } 
     catch (error) {
         res.status(500).send({status: false, message:error.message})

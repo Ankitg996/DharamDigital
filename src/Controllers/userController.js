@@ -9,7 +9,6 @@ const createUser= async function(req, res) {
         let data = req.body;
         let {firstName, lastName, email, phone, gender, password} = data;
 
-
         //========= incoming data exist check ==============
         if (Object.keys(data).length===0) return res.status(400).send({status: false, message:'please provide mandatory fields ! '})
 
@@ -33,7 +32,7 @@ const createUser= async function(req, res) {
         //======== creating document ========
         const user = await userModel.create(data);
         res.status(201).send({ status: true, message: `Registration successfull. login credentials - userName = ${email} , password = ${actualPass}`, data: user })
-
+      
     }
     catch(error){
         res.status(500).send({status: false, message:error.message})
@@ -65,7 +64,11 @@ const login = async function (req, res) {
         const token = JWT.sign({
             emailId: emailExists.email,
             exp: Math.floor(Date.now() / 1000) + 24*60*60
-        }, "weAreIndians");       
+        }, "weAreIndians");     
+        
+        //------ session save for user -----------
+        req.session.user = data;
+        req.session.save();
     
         res.setHeader("token",token)
         return res.status(200).send({status:true, message: 'login successful',email:email, token: token})
@@ -76,4 +79,13 @@ const login = async function (req, res) {
     }
 }
 
-export { createUser, login};
+const logout =  function (req, res) {
+    req.session.destroy();
+    return res.status(200).send({status: true, message: 'user logout successful session data removed'})
+}
+
+const sessionData = function (req, res){
+    return res.status(200).send({status: true, message:"user's data below", data :req.session.user})
+}
+
+export { createUser, login, logout, sessionData } ;

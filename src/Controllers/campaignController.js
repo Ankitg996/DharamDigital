@@ -42,8 +42,8 @@ const redirectCampaign = async function (req, res) {
         if(!isValidBody(short_token)|| !isValidSToken(short_token)) return res.status(401).send({status:false, message:'please enter a valid and mandatory short_token'})
 
         // ---- check token in DB ------
-        const campaignCheck =  await campaignModel.findOne({short_token:short_token})
-        if(!campaignCheck) return res.status(404).send({status:false, message:'campaign with given short token does not exist'})
+        const campaignCheck =  await campaignModel.findOne({short_token:short_token, enabled: true})
+        if(!campaignCheck) return res.status(404).send({status:false, message:'campaign with given short token does not exist or enabled'})
 
         // logic would be here for 70:30 distribution .
         let redirectedUrl = campaignCheck.offers[1].offer_url

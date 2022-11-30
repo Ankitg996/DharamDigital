@@ -42,6 +42,7 @@ process.on('SIGINT',()=>{    // using ctrl + c
         })
     })
 })
+
 process.on('SIGTERM',()=>{   // using kill + {process.pid}
     console.log('SIGTERM recieved');
     server.close(()=>{ 

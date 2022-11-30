@@ -24,6 +24,10 @@ const campaignSchema = new mongoose.Schema(
         enabled:{
             type:Boolean,
             default: true
+        },
+        visitedCount:{
+            type: Number,
+            default:0
         }
     }
 )

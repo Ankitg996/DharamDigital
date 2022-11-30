@@ -1,6 +1,7 @@
 import campaignModel from "../Models/campaignModel.js";
 import { isValidBody, isValidRatioPercentage, isValidSToken, isValidUrl } from "../Utilities/validation.js";
 
+
 const createCampaign =async function (req, res) {
     try {
         let data = req.body;
@@ -42,11 +43,18 @@ const redirectCampaign = async function (req, res) {
         if(!isValidBody(short_token)|| !isValidSToken(short_token)) return res.status(401).send({status:false, message:'please enter a valid and mandatory short_token'})
 
         // ---- check token in DB ------
-        const campaignCheck =  await campaignModel.findOne({short_token:short_token, enabled: true})
+        const campaignCheck =  await campaignModel.findOneAndUpdate({short_token:short_token, enabled: true},{$inc:{visitedCount:+1}})
         if(!campaignCheck) return res.status(404).send({status:false, message:'campaign with given short token does not exist or enabled'})
 
-        // logic would be here for 70:30 distribution .
-        let redirectedUrl = campaignCheck.offers[1].offer_url
+        // logic is here for distribution .
+        let index = 0
+        let ratio_percentage = campaignCheck.offers[index].ratio_percentage
+        let modCount = campaignCheck.visitedCount % 10;
+        let modPercentage = ratio_percentage/10;
+        // console.log(modPercentage);
+        if(modCount > modPercentage) index = 1;
+
+        let redirectedUrl = campaignCheck.offers[index].offer_url
 
         return res.status(302).redirect(302, `${redirectedUrl}`)
 
